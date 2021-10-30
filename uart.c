@@ -36,7 +36,7 @@ void send_UART_12b(uint16_t palabra)
 
 	aux = palabra & 0xFF;
 	UART_SendByte(LPC_UART0, aux);
-	aux = (palabra>>8) & 0xFF;
+	aux = (palabra>>8) & 0xF;
 	UART_SendByte(LPC_UART0, aux);
 
 }
