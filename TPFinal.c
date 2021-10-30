@@ -6,9 +6,11 @@
 
 #include "LPC17xx.h"
 
-#include "configuraciones.c"
+#include "configuraciones.h"
 
-int muestras[300000];		//Espacio de memoria donde se guardaran las muestras del ADC
+#define MUESTRAS 1500
+
+int muestras[MUESTRAS];		//Espacio de memoria donde se guardaran las muestras del ADC
 int nr_muestra;				//Variable encargada de recorrer el array de muestras
 int grabando;				//Flag que indica si se esta grabando
 int reproduciendo;			//Flag que indica si se esta reproduciendo
@@ -38,7 +40,7 @@ void EINT3_IRQHandler(void)
 			grabando = 1;		//Levanto el flag de grabando
 			LPC_GPIO0->FIOSET = (0x1<<15);	//Enciendo el led que indica grabacion
 			nr_muestra = 0;		//Reseteo el contador de muestras
-			conf_adc();			//Configuro ADC
+			conf_ADC();			//Configuro ADC
 			conf_tim1(30000);	//Configuro Tim1
 			conf_tim0_g();		//Configuro Tim0 para grabacion
 
@@ -98,10 +100,10 @@ void TIMER1_IRQHandler(void)
 
 void TIMER0_IRQHandler(void)
 {
-	if(nr_muestra < 300000){
+	if(nr_muestra < MUESTRAS){
 
-		LPC_DAC->DACR = (muestras[nr_muestras]<<4) & 0xFFC0;	//Le paso el valor de la muestra
-		nr_muestras++;					//Incremento el contador de muestras
+		LPC_DAC->DACR = (muestras[nr_muestra]<<4) & 0xFFC0;	//Le paso el valor de la muestra
+		nr_muestra ++;					//Incremento el contador de muestras
 	}
 
 	LPC_TIM0->IR |= (0x1<<1);			//Bajo el flag de interrupcion
@@ -111,10 +113,10 @@ void TIMER0_IRQHandler(void)
 void ADC_IRQHandler(void)
 {
 
-	if(nr_muestra < 300000){
+	if(nr_muestra < MUESTRAS){
 
 		muestras[nr_muestra] = (LPC_ADC->ADDR0>>4) & 0xFFF ;	//Guardo la muestra
-		nr_muestras++;		//Incremento el contador de muestras
+		nr_muestra ++;		//Incremento el contador de muestras
 
 	}
 

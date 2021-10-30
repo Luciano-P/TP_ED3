@@ -1,11 +1,6 @@
 
 #include "LPC17xx.h"
 
-void conf_gpio(void);
-void conf_tim0_g(void);
-void conf_tim1(int ms);
-void conf_ADC(void);
-void conf_DAC(void);
 
 /*
  * Configuro los puertos P0.0 y P0.1 como entradas para los comandos grabar y reproducir

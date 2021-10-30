@@ -13,7 +13,7 @@ void conf_UART(void)
 	uartconf.Databits = UART_DATABIT_8;
 	uartconf.Stopbits = UART_STOPBIT_1;
 
-	UART_Init(LPC_UART0, uartconf);
+	UART_Init(LPC_UART0, &uartconf);
 
 }
 
