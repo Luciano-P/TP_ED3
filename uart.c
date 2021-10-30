@@ -28,3 +28,15 @@ void send_UART(uint8_t x)
 	UART_SendByte(LPC_UART0, x);
 
 }
+
+void send_UART_12b(uint16_t palabra)
+{
+
+	uint8_t aux;
+
+	aux = palabra & 0xFF;
+	UART_SendByte(LPC_UART0, aux);
+	aux = (palabra>>8) & 0xFF;
+	UART_SendByte(LPC_UART0, aux);
+
+}
