@@ -22,7 +22,7 @@ void conf_gpio(void)
 
 /*
  * Esta configuracion es para el TIMER0 al momento de grabar
- * Configuro el tim0 para match1 a 20 KHz, lo que me genera un rising edge a 10 KHz por toggleo
+ * Configuro el tim0 para match1 a 8 KHz, lo que me genera un rising edge a 4 KHz por toggleo
  */
 void conf_tim0_g(void)
 {
@@ -33,7 +33,7 @@ void conf_tim0_g(void)
 	LPC_TIM0->PR = 24;				//Prescaler para una t_res de micros
 	LPC_TIM0->MCR |= (0x1<<4);		//Receteo por MR1
 	LPC_TIM0->MCR &= ~(0x1<<3);		//Desactivo interrupciones por MR1
-	LPC_TIM0->MR1 = (49);			//Match para 20 KHZ
+	LPC_TIM0->MR1 = (124);			//Match para 8 KHZ
 	LPC_TIM0->EMR |= (0x3<<6);		//Toggleo de MR1
 
 	LPC_TIM0->CTCR |= 0x3 ;			//Inicio y receteo del timer
@@ -46,7 +46,7 @@ void conf_tim0_g(void)
 
 /*
  * Esta configuracion es para el TIMER0 al momento de reproducir
- * Configuro el tim0 para match1 a 10 KHz e interrupciones.
+ * Configuro el tim0 para match1 a 4 KHz e interrupciones.
  */
 void conf_tim0_r(void)
 {
@@ -56,7 +56,7 @@ void conf_tim0_r(void)
 
 	LPC_TIM0->PR = 24;				//Prescaler para una t_res de micros
 	LPC_TIM0->MCR |= (0x3<<3);		//Receteo e interrupciones por MR1
-	LPC_TIM0->MR1 = (99);			//Match para 10 KHZ
+	LPC_TIM0->MR1 = (249);			//Match para 4 KHZ
 	LPC_TIM0->EMR &= ~(0x3<<6);		//Desactivo toggleo de MR1
 
 	LPC_TIM0->CTCR |= 0x3 ;			//Inicio y receteo del timer
