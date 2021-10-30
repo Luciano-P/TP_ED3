@@ -99,7 +99,7 @@ void conf_ADC(void)
 	LPC_PINCON->PINMODE1 |= (0x2<<14);	//Sin resistencias pull-up ni pull-douwn
 
 	LPC_SC->PCONP |= (0x1<<12);		//Habilito el modulo ADC
-	LPC_SC->PCLKSEL0 != (0x3<<24);	//PCLK = CCLK/8
+	LPC_SC->PCLKSEL0 |= (0x3<<24);	//PCLK = CCLK/8
 
 	LPC_ADC->ADCR |= (0x1<<21) | (0x4<<24);	//Enciendo el adc y configuro start por MR0.1
 	LPC_ADC->ADINTEN = 0x1;					//Interrupciones por canal 0
