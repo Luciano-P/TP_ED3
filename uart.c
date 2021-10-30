@@ -6,6 +6,11 @@
 void conf_UART(void)
 {
 
+	LPC_PINCON->PINSEL0 |= 0x1<<4;		//P0.2 = TXD0
+	LPC_PINCON->PINSEL0 |= 0x1<<6;		//P0.3 = RXD0
+	LPC_PINCON->PINMODE0 |= 0X2<<4;		//No pull-up, no pull-down
+	LPC_PINCON->PINMODE0 |= 0X2<<6;		//No pull-up, no pull-down
+
 	UART_CFG_Type uartconf;
 
 	uartconf.Baud_rate = 9600;
