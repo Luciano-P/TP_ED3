@@ -79,16 +79,16 @@ void TIMER1_IRQHandler(void)
 		LPC_ADC->ADCR &= ~(1<<21);		//Apago el ADC
 		LPC_SC->PCONP &= ~(1<<12);		//Quito potencia al ADC
 
-		LPC_TIM0->CTCR &= ~(0x1);		//Desactivo el Timer0
-		LPC_TIM1->CTCR &= ~(0x1);		//Desactivo el Timer1
+		LPC_TIM0->TCR &= ~(0x1);		//Desactivo el Timer0
+		LPC_TIM1->TCR &= ~(0x1);		//Desactivo el Timer1
 
 	}else{
 
 		reproduciendo = 0;
 		LPC_GPIO0->FIOCLR = (0x1<<16);	//Apago el led que indica reproduccion
 
-		LPC_TIM0->CTCR &= ~(0x1);		//Desactivo el Timer0
-		LPC_TIM1->CTCR &= ~(0x1);		//Desactivo el Timer1
+		LPC_TIM0->TCR &= ~(0x1);		//Desactivo el Timer0
+		LPC_TIM1->TCR &= ~(0x1);		//Desactivo el Timer1
 
 	}
 
