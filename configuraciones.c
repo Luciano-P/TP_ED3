@@ -25,19 +25,18 @@ void conf_gpio(void)
  * Configuro el tim0 para match1 a 8 KHz, lo que me genera un rising edge a 4 KHz por toggleo
  */
 void conf_tim0_g(void)
+
 {
 
-	LPC_SC->PCONP |= (0x1<<1); 		//Habilito el modulo tim 0
-	LPC_SC->PCLKSEL0 &= ~(0x3<<2);	//PCLK = CCLK/4
+    LPC_SC     -> PCON      |=  (1<<1);      //Enciendo el Timer PAG 65
+    LPC_SC     -> PCLKSEL0  &= ~(3<<2);      //PCLK = CCLK/4
 
-	LPC_TIM0->PR = 24;				//Prescaler para una t_res de micros
-	LPC_TIM0->MCR |= (0x1<<4);		//Receteo por MR1
-	LPC_TIM0->MCR &= ~(0x1<<3);		//Desactivo interrupciones por MR1
-	LPC_TIM0->MR1 = (124);			//Match para 8 KHZ
-	LPC_TIM0->EMR |= (0x3<<6);		//Toggleo de MR1
-
-	LPC_TIM0->CTCR |= 0x3 ;			//Inicio y receteo del timer
-	LPC_TIM0->CTCR &= ~0x2;			//Quito el recet del timer
+    LPC_TIM0   -> PR 		 =   24;	     //Prescaler para una t_res de micros
+    LPC_TIM0   -> EMR       |=  (3<<6);      //Controla que pasa con el pin asociado al MATCH, en este caso togglea P1.28 (Salida de MATCH TIMER no GPIO) Pag 509
+    LPC_TIM0   -> MR1        =   62;         //Valor cargado al Match Register 0 del TMR0
+    LPC_TIM0   -> MCR        =  (1<<4);      //Reinicia el contador cuando TMR0 = MR1 pero no genera interrupcion PAG 507
+    LPC_TIM0   -> TCR        =   3;          //Habilita al contador y lo pone en Reset PAG 505
+    LPC_TIM0   -> TCR       &= ~(1<<1);      //Saco el TMR0 de Reset
 
 	NVIC_DisableIRQ(TIMER0_IRQn);
 
@@ -51,19 +50,18 @@ void conf_tim0_g(void)
 void conf_tim0_r(void)
 {
 
-	LPC_SC->PCONP |= (0x1<<1); 		//Habilito el modulo tim 0
-	LPC_SC->PCLKSEL0 &= ~(0x3<<2);	//PCLK = CCLK/4
+    LPC_SC     -> PCON      |=  (1<<1);      //Enciendo el Timer
+    LPC_SC     -> PCLKSEL0  &= ~(3<<2);      //PCLK = CCLK/4
 
-	LPC_TIM0->PR = 24;				//Prescaler para una t_res de micros
-	LPC_TIM0->MCR |= (0x3<<3);		//Receteo e interrupciones por MR1
-	LPC_TIM0->MR1 = (249);			//Match para 4 KHZ
-	LPC_TIM0->EMR &= ~(0x3<<6);		//Desactivo toggleo de MR1
-
-	LPC_TIM0->CTCR |= 0x3 ;			//Inicio y receteo del timer
-	LPC_TIM0->CTCR &= ~0x2;			//Quito el recet del timer
+    LPC_TIM0   -> PR 		 =   24;		 //Prescaler para una t_res de microsegundos
+    LPC_TIM0   -> EMR       &=  ~(3<<6);     //M0.1 deshabilitado
+    LPC_TIM0   -> MR1        =   124;        //MR0 cargado para generar 4 KHz
+    LPC_TIM0   -> MCR        =   (3<<3);     //Reinicia el contador cuando TMR0 = MR0 y genera interrupcion
+    LPC_TIM0   -> IR         =  (1<<1);      //Borro Flag de Interrupcion
+    LPC_TIM0   -> TCR        =   3;          //Habilita al contador y lo pone en Reset
+    LPC_TIM0   -> TCR       &= ~(1<<1);      //Saco el TMR0 de Reset
 
 	NVIC_EnableIRQ(TIMER0_IRQn);
-
 }
 
 
