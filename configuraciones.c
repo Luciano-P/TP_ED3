@@ -1,21 +1,23 @@
 
+
 #include "LPC17xx.h"
 #include "lpc17xx_uart.h"
 
 
 /*
- * Configuro los puertos P0.0 y P0.1 como entradas para los comandos grabar y reproducir
- * Configuro los puertos P0.15 y P0.16 como salidas para los indicadores grabando y reproduciendo
+ * Configuro los puertos P0.0, P0.1, P0.18 como entradas para los comandos grabar, reproducir y enviar
+ * Configuro los puertos P0.6, P0.7, P0.8 como salidas para los indicadores grabando, reproduciendo y enviando
  */
 void conf_gpio(void)
 {
 
-	LPC_PINCON->PINMODE0 |= 0xF; 	//Pull-down a P0.0 y P0.1
+	LPC_PINCON->PINMODE0 |= 0xF; 		//Pull-down a P0.0 y P0.1
+	LPC_PINCON->PINMODE1 |= (0x3<<4);	//Pull-down a P0.18
 
-	LPC_GPIOINT->IO0IntEnR |= 0x3;	//Habilito interrupciones por P0.0 y P0.1
-	LPC_GPIOINT->IO0IntClr |= 0x3;	//Limpio las flags
+	LPC_GPIOINT->IO0IntEnR |= 0x3 | (0x1<<18);	//Habilito interrupciones por P0.0, P0.1, P0.18
+	LPC_GPIOINT->IO0IntClr |= 0x3 | (0x1<<18);	//Limpio las flags
 
-	LPC_GPIO0->FIODIR |= (0x3<<15);	//Seteo los puertos P0.15 y P0.16 como salidas
+	LPC_GPIO0->FIODIR |= (0x1<<6) | (0x1<<7) | (0x1<<18);	//Seteo los puertos P0.6, P0.7 y P0.18 como salidas
 
 	NVIC_EnableIRQ(EINT3_IRQn);		//Habilito las interrupciones en el NVIC
 }
@@ -131,9 +133,9 @@ void conf_UART(void)
 {
 
     LPC_PINCON->PINSEL0  |= 0x1<<4;		//P0.2 = TXD0
-	LPC_PINCON->PINSEL0  |= 0x1<<6;		//P0.3 = RXD0
 	LPC_PINCON->PINMODE0 |= 0X2<<4;		//No pull-up, no pull-down
-	LPC_PINCON->PINMODE0 |= 0X2<<6;		//No pull-up, no pull-down
+	//LPC_PINCON->PINSEL0  |= 0x1<<6;		//P0.3 = RXD0
+	//LPC_PINCON->PINMODE0 |= 0X2<<6;		//No pull-up, no pull-down
 
 	UART_CFG_Type UARTconf;
 	UARTconf.Baud_rate = 9600;				//Baud_rate = 9600 bits/seg
