@@ -6,20 +6,29 @@
 void conf_UART(void)
 {
 
-	LPC_PINCON->PINSEL0 |= 0x1<<4;		//P0.2 = TXD0
-	LPC_PINCON->PINSEL0 |= 0x1<<6;		//P0.3 = RXD0
+    LPC_PINCON->PINSEL0  |= 0x1<<4;		//P0.2 = TXD0
+	LPC_PINCON->PINSEL0  |= 0x1<<6;		//P0.3 = RXD0
 	LPC_PINCON->PINMODE0 |= 0X2<<4;		//No pull-up, no pull-down
 	LPC_PINCON->PINMODE0 |= 0X2<<6;		//No pull-up, no pull-down
 
-	UART_CFG_Type uartconf;
+	UART_CFG_Type UARTconf;
+	UARTconf.Baud_rate = 9600;
+	UARTconf.Parity    = UART_PARITY_ODD;
+	UARTconf.Databits  = UART_DATABIT_8;
+	UARTconf.Stopbits  = UART_STOPBIT_1;
 
-	uartconf.Baud_rate = 9600;
-	uartconf.Parity = UART_PARITY_ODD;
-	uartconf.Databits = UART_DATABIT_8;
-	uartconf.Stopbits = UART_STOPBIT_1;
+	UART_FIFO_CFG_Type UARTFIFOconf;
+	UARTFIFOconf.FIFO_ResetRxBuf = DISABLE;
+	UARTFIFOconf.FIFO_ResetTxBuf = ENABLE;
+	UARTFIFOconf.FIFO_DMAMode    = DISABLE;
+	UARTFIFOconf.FIFO_Level      = UART_FIFO_TRGLEV0;
+	
+	UART_Init(LPC_UART0, &UARTconf);
+	UART_FIFOConfigStructInit(&UARTFIFOconf);
+    
+	UART_FIFOConfig(LPC_UART0, &UARTFIFOconf);
 
-	UART_Init(LPC_UART0, &uartconf);
-
+	UART_TxCmd(LPC_UART0, ENABLE);
 }
 
 void send_UART(uint8_t x)
