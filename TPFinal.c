@@ -40,18 +40,25 @@ int overrun;							//Falg que indica si hubo overrun del ADC
 int main(void)
 {
 
-	nr_muestra = 0;					//Inicializo los flags
-	grabacion_disponible = 0;
+	grabacion_disponible = 0;		//Inicializo los flags
 	overrun = 0;
 	grabando = 0;
 	reproduciendo = 0;
 	enviando = 0;
 
-
 	conf_gpio();					//Configuro GPIO
 
 	while(1){
 
+		if(enviando == 1){
+
+			LPC_GPIO0->FIOSET = (0x1<<8);	//Enciendo el led que indica reproduccion
+			conf_UART();
+			send_muestras(muestras, MAX_MUESTRAS);
+			LPC_GPIO0->FIOCLR = (0x1<<8);	//Apago el led que indica reproduccion
+			enviando = 0;
+
+		}
 
 	}
 
@@ -85,7 +92,7 @@ void EINT3_IRQHandler(void)
 	}
 	else if(LPC_GPIOINT->IO0IntStatR & 0x2){	//Chequeo si se pulso boton reproducir
 
-		if((!grabando) && (!reproduciendo) && (!enviando) && (!overrun)){
+		if((!grabando) && (!reproduciendo) && (!enviando) && (!overrun) && grabacion_disponible){
 
 			reproduciendo = 1;				//Levanto el flag de reproduccion
 			LPC_GPIO0->FIOSET = (0x1<<7);	//Enciendo el led que indica reproduccion
@@ -102,13 +109,10 @@ void EINT3_IRQHandler(void)
 	}
 	else if(LPC_GPIOINT->IO0IntStatR & (0x1<<18)){	//Chequeo si se pulso boton enviar
 
-		if((!grabando) && (!reproduciendo) && (!enviando) && (!overrun)){
+		if((!grabando) && (!reproduciendo) && (!enviando) && (!overrun) && grabacion_disponible){
 
 			enviando = 1;					//Levanto el flag de reproduccion
-			LPC_GPIO0->FIOSET = (0x1<<8);	//Enciendo el led que indica reproduccion
-			/*
-			 * Rutina de UART
-			 */
+
 		}
 
 		LPC_GPIOINT->IO0IntClr |= (0x1<<18);	//Bajo flag de interrupcion

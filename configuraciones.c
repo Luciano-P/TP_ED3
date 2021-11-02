@@ -3,6 +3,8 @@
 #include "LPC17xx.h"
 #include "lpc17xx_uart.h"
 
+#include "configuraciones.h"
+
 
 /*
  * Configuro los puertos P0.0, P0.1, P0.18 como entradas para los comandos grabar, reproducir y enviar
