@@ -168,8 +168,12 @@ void TIMER0_IRQHandler(void)
 {
 	if(nr_muestra < MAX_MUESTRAS){
 
-		LPC_DAC->DACR = (muestras[nr_muestra]<<4) & 0xFFC0;		//Le paso el valor de la muestra
-		nr_muestra ++;											//Incremento el contador de muestras
+		uint32_t aux;
+		aux = LPC_DAC->DACR & (0x1<<16);
+		aux |= (muestras[nr_muestra]<<4);
+		LPC_DAC->DACR = aux & 0x1FFC0;		//Le paso el valor de la muestra
+		nr_muestra ++;						//Incremento el contador de muestras
+
 	}
 
 	LPC_TIM0->IR |= (0x1<<1);									//Bajo el flag de interrupcion
