@@ -48,23 +48,28 @@ int main(void)
 	reproduciendo = 0;
 	enviando = 0;
 
-	conf_gpio();					//Configuro GPIO
+	conf_gpio();					//Configuro los modulos
+	conf_tim0();
+	conf_tim1();
+	conf_ADC();
+	conf_DAC();
+	conf_UART();
 
 	while(1){
 
 		if(enviando == 1){
 
 			LPC_GPIO0->FIOSET = (0x1<<8);	//Enciendo el led que indica reproduccion
-			conf_UART();
+			enable_UART();
 			if(send_muestras(muestras, MAX_MUESTRAS)){	//Realizo el envio de las muestras mientras verifico
 				uart_timeout = 1;						//que no falle.
 			}
-			if(uart_timeout){
+			if(uart_timeout){					//Si falla
 				LPC_GPIO0->FIOSET = (0x1<<6);	//Enciendo ademas el led de grabacion en conjunto
-			}else{
+			}else{								//Si no falla
 				LPC_GPIO0->FIOCLR = (0x1<<8);	//Apago el led que indica reproduccion
 			}
-
+			disable_UART();
 			enviando = 0;
 
 		}
@@ -91,9 +96,9 @@ void EINT3_IRQHandler(void)
 			grabando = 1;					//Levanto el flag de grabando
 			LPC_GPIO0->FIOSET = (0x1<<6);	//Enciendo el led que indica grabacion
 			nr_muestra = 0;					//Reseteo el contador de muestras
-			conf_ADC();						//Configuro ADC
-			conf_tim1(4000);				//Configuro Tim1
-			conf_tim0_g();					//Configuro Tim0 para grabacion
+			set_ADC();						//Seteo ADC
+			set_tim1(4000);					//Seteo Tim1
+			set_tim0_g();					//Seteo Tim0 para grabacion
 
 		}
 
@@ -107,9 +112,9 @@ void EINT3_IRQHandler(void)
 			reproduciendo = 1;				//Levanto el flag de reproduccion
 			LPC_GPIO0->FIOSET = (0x1<<7);	//Enciendo el led que indica reproduccion
 			nr_muestra = 0;					//Reseteo el contador de muestras
-			conf_DAC();						//Configuro DAC
-			conf_tim1(4000);				//Configuro Tim1
-			conf_tim0_r();					//Configuro Tim0 para reproduccion
+
+			set_tim1(4000);				//Seteo Tim1
+			set_tim0_r();					//Seteo Tim0 para reproduccion
 
 
 		}
@@ -141,7 +146,6 @@ void TIMER1_IRQHandler(void)
 		NVIC_DisableIRQ(ADC_IRQn);		//Deshabilito interrupcion por ADC
 
 		LPC_ADC->ADCR &= ~(1<<21);		//Apago el ADC
-		LPC_SC->PCONP &= ~(1<<12);		//Quito potencia al ADC
 
 		LPC_TIM0->TCR &= ~(0x1);		//Desactivo el Timer0
 		LPC_TIM1->TCR &= ~(0x1);		//Desactivo el Timer1
@@ -152,6 +156,8 @@ void TIMER1_IRQHandler(void)
 
 		reproduciendo = 0;
 		LPC_GPIO0->FIOCLR = (0x1<<7);	//Apago el led que indica reproduccion
+
+		LPC_DAC->DACR &=  ~0xFFC0;		//Dejo la salida del DAC en 0
 
 		LPC_TIM0->TCR &= ~(0x1);		//Desactivo el Timer0
 		LPC_TIM1->TCR &= ~(0x1);		//Desactivo el Timer1
@@ -168,8 +174,12 @@ void TIMER0_IRQHandler(void)
 {
 	if(nr_muestra < MAX_MUESTRAS){
 
-		LPC_DAC->DACR = (muestras[nr_muestra]<<4) & 0xFFC0;		//Le paso el valor de la muestra
-		nr_muestra ++;											//Incremento el contador de muestras
+		uint32_t aux;
+		aux = LPC_DAC->DACR & (0x1<<16);
+		aux |= (muestras[nr_muestra]<<4);
+		LPC_DAC->DACR = aux & 0x1FFC0;		//Le paso el valor de la muestra
+		nr_muestra ++;						//Incremento el contador de muestras
+
 	}
 
 	LPC_TIM0->IR |= (0x1<<1);									//Bajo el flag de interrupcion
@@ -188,7 +198,6 @@ void ADC_IRQHandler(void)
 		NVIC_DisableIRQ(ADC_IRQn);		//Deshabilito interrupcion por ADC
 
 		LPC_ADC->ADCR &= ~(1<<21);		//Apago el ADC
-		LPC_SC->PCONP &= ~(1<<12);		//Quito potencia al ADC
 
 		LPC_TIM0->TCR &= ~(0x1);		//Desactivo el Timer0
 		LPC_TIM1->TCR &= ~(0x1);		//Desactivo el Timer1
