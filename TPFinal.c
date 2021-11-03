@@ -33,7 +33,7 @@ int grabando;							//Flag que indica si se esta grabando
 int reproduciendo;						//Flag que indica si se esta reproduciendo
 int enviando;							//Flag que indica si se estan enviando datos por UART
 int grabacion_disponible;				//Flag que indica si hay disponible una grabacion
-int overrun;							//Falg que indica si hubo overrun del ADC
+int overrun;							//Flag que indica si hubo overrun del ADC
 
 
 

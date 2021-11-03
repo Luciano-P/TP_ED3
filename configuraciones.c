@@ -19,7 +19,7 @@ void conf_gpio(void)
 	LPC_GPIOINT->IO0IntEnR |= 0x3 | (0x1<<18);	//Habilito interrupciones por P0.0, P0.1, P0.18
 	LPC_GPIOINT->IO0IntClr |= 0x3 | (0x1<<18);	//Limpio las flags
 
-	LPC_GPIO0->FIODIR |= (0x1<<6) | (0x1<<7) | (0x1<<18);	//Seteo los puertos P0.6, P0.7 y P0.18 como salidas
+	LPC_GPIO0->FIODIR |= (0x1<<6) | (0x1<<7) | (0x1<<8);	//Seteo los puertos P0.6, P0.7 y P0.8 como salidas
 
 	NVIC_EnableIRQ(EINT3_IRQn);		//Habilito las interrupciones en el NVIC
 }

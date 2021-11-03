@@ -43,7 +43,7 @@ int send_UART_12b(uint16_t palabra)
 
 
 /*
- *
+ * Recorre el array muestras para enviar cada dato mediante UART
  */
 void send_muestras(uint16_t muestras[], int length){
 
