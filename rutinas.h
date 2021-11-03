@@ -11,4 +11,6 @@ int send_UART_12b(uint16_t);
 int send_muestras(uint16_t muestras[], int length);
 void enable_UART();
 void disable_UART();
+void cargar_muestras(uint16_t muestras[]);
+
 #endif

@@ -128,6 +128,25 @@ void disable_UART()
 	UART_TxCmd(LPC_UART0, DISABLE);						//Deshabilito transmision
 }
 
+void cargar_muestras(uint16_t muestras[])
+{
+	int temp = 0;
+	for(int i = 0; i<160000; i++){
+		if(i<4000){
+			muestras[i]= i;
+		}else if(i>=4000 && i<8000){
+			muestras[i]= 4000 -(i-4000);
+		}else if(i>=8000 && i<12000){
+			muestras[i]=i-8000;
+		}else if(muestras>=12000){
+			muestras = 4000 - (i-12000);
+		}
+
+	}
+
+
+}
+
 
 
 
