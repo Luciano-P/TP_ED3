@@ -34,7 +34,7 @@ void set_tim0_r(void)
 
 	LPC_TIM0   -> EMR       &=  ~(3<<6);     //Desahbilito la salida externa de MR1
 	LPC_TIM0   -> MR1        =   124;        //MR1 cargado para generar 4 KHz
-	LPC_TIM0   -> MCR        =   (1<<3);     //Genera interrupcion por MR1
+	LPC_TIM0   -> MCR        |=   (1<<3);     //Genera interrupcion por MR1
 	LPC_TIM0   -> IR         =  (1<<1);      //Borro Flag de Interrupcion
 	LPC_TIM0   -> TCR        =   3;          //Habilita al contador y lo pone en Reset
 	LPC_TIM0   -> TCR       &= ~(1<<1);      //Saco el TMR0 de Reset
