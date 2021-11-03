@@ -21,6 +21,7 @@ void conf_gpio(void)
 
 	LPC_GPIO0->FIODIR |= (0x1<<6) | (0x1<<7) | (0x1<<8);	//Seteo los puertos P0.6, P0.7 y P0.8 como salidas
 
+	NVIC_SetPriority(EINT3_IRQn, 7);
 	NVIC_EnableIRQ(EINT3_IRQn);		//Habilito las interrupciones en el NVIC
 }
 
@@ -66,6 +67,7 @@ void conf_tim0_r(void)
     LPC_TIM0   -> TCR        =   3;          //Habilita al contador y lo pone en Reset
     LPC_TIM0   -> TCR       &= ~(1<<1);      //Saco el TMR0 de Reset
 
+    NVIC_SetPriority(TIMER0_IRQn, 6);
 	NVIC_EnableIRQ(TIMER0_IRQn);
 
 }
@@ -87,6 +89,7 @@ void conf_tim1(int ms)
 	LPC_TIM1	->TCR 		|=       0x3;			//Inicio y reseteo del timer
 	LPC_TIM1	->TCR 		&= 		~0x2;			//Saco el TMR1 del Reset
 
+	NVIC_SetPriority(TIMER1_IRQn, 5);
 	NVIC_EnableIRQ(TIMER1_IRQn);
 
 }
@@ -109,6 +112,7 @@ void conf_ADC(void)
 	LPC_ADC -> ADCR    |= (0x1<<21) | (0x4<<24);	//Enciendo el adc y configuro start por MR0.1
 	LPC_ADC -> ADINTEN  = 0x1;						//Interrupciones por canal 0
 
+	NVIC_SetPriority(ADC_IRQn, 6);
 	NVIC_EnableIRQ(ADC_IRQn);
 
 }

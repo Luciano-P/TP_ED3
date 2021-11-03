@@ -44,14 +44,16 @@ int send_UART_12b(uint16_t palabra)
 
 /*
  * Recorre el array muestras para enviar cada dato mediante UART
+ * Retorna 1 sel envio fallo y se interrumpio, 0 sino
  */
-void send_muestras(uint16_t muestras[], int length){
+int send_muestras(uint16_t muestras[], int length){
 
 	for(int i=0; i<length; i++){
 		if(send_UART_12b(muestras[i])){
-			//Que hago si no se envio algun dato
+			return 1;
 		}
 	}
+	return 0;
 }
 
 

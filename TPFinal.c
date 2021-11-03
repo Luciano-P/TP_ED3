@@ -34,6 +34,7 @@ int reproduciendo;						//Flag que indica si se esta reproduciendo
 int enviando;							//Flag que indica si se estan enviando datos por UART
 int grabacion_disponible;				//Flag que indica si hay disponible una grabacion
 int overrun;							//Flag que indica si hubo overrun del ADC
+int uart_timeout;						//Flag que indica si hubo timeout en el uart
 
 
 
@@ -42,6 +43,7 @@ int main(void)
 
 	grabacion_disponible = 0;		//Inicializo los flags
 	overrun = 0;
+	uart_timeout = 0;
 	grabando = 0;
 	reproduciendo = 0;
 	enviando = 0;
@@ -54,8 +56,15 @@ int main(void)
 
 			LPC_GPIO0->FIOSET = (0x1<<8);	//Enciendo el led que indica reproduccion
 			conf_UART();
-			send_muestras(muestras, MAX_MUESTRAS);
-			LPC_GPIO0->FIOCLR = (0x1<<8);	//Apago el led que indica reproduccion
+			if(send_muestras(muestras, MAX_MUESTRAS)){	//Realizo el envio de las muestras mientras verifico
+				uart_timeout = 1;						//que no falle.
+			}
+			if(uart_timeout){
+				LPC_GPIO0->FIOSET = (0x1<<6);	//Enciendo ademas el led de grabacion en conjunto
+			}else{
+				LPC_GPIO0->FIOCLR = (0x1<<8);	//Apago el led que indica reproduccion
+			}
+
 			enviando = 0;
 
 		}
@@ -70,8 +79,9 @@ void EINT3_IRQHandler(void)
 {
 	if(LPC_GPIOINT->IO0IntStatR & 0x1){		//Chequeo si se pulso boton grabar
 
-		if(overrun){
+		if(overrun || uart_timeout){
 			overrun = 0;
+			uart_timeout = 0;
 			LPC_GPIO0->FIOCLR = (0x1<<6) | (0x1<<7) | (0x1<<8);	//Apago los 3 leds
 
 		}
@@ -92,7 +102,7 @@ void EINT3_IRQHandler(void)
 	}
 	else if(LPC_GPIOINT->IO0IntStatR & 0x2){	//Chequeo si se pulso boton reproducir
 
-		if((!grabando) && (!reproduciendo) && (!enviando) && (!overrun) && grabacion_disponible){
+		if((!grabando) && (!reproduciendo) && (!enviando) && (!overrun) && (!uart_timeout) && grabacion_disponible){
 
 			reproduciendo = 1;				//Levanto el flag de reproduccion
 			LPC_GPIO0->FIOSET = (0x1<<7);	//Enciendo el led que indica reproduccion
@@ -109,7 +119,7 @@ void EINT3_IRQHandler(void)
 	}
 	else if(LPC_GPIOINT->IO0IntStatR & (0x1<<18)){	//Chequeo si se pulso boton enviar
 
-		if((!grabando) && (!reproduciendo) && (!enviando) && (!overrun) && grabacion_disponible){
+		if((!grabando) && (!reproduciendo) && (!enviando) && (!overrun) && (!uart_timeout) && grabacion_disponible){
 
 			enviando = 1;					//Levanto el flag de reproduccion
 
