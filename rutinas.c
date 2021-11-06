@@ -130,7 +130,7 @@ void disable_UART()
 
 void cargar_muestras(uint16_t muestras[], int length)
 {
-	int temp = 0;
+
 	for(int i = 0; i<length; i++){
 		if(i<4000){
 			muestras[i]= i;
@@ -138,8 +138,8 @@ void cargar_muestras(uint16_t muestras[], int length)
 			muestras[i]= 4000 -(i-4000);
 		}else if(i>=8000 && i<12000){
 			muestras[i]=i-8000;
-		}else if(muestras>=12000){
-			muestras = 4000 - (i-12000);
+		}else if(i>=12000){
+			muestras[i] = 4000 - (i-12000);
 		}
 
 	}
